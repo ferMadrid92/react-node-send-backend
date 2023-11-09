@@ -34,13 +34,22 @@ exports.subirArchivo = async (req, res, next) => {
   
 };
 
-exports.eliminarArchivo = async (req, res) => {
-    try {
-        fs.unlinkSync(__dirname + `/../uploads/${req.archivo}`);
-    } catch (error) {
-        console.error(error)
-    }
+exports.eliminarArchivo = async (req, res, next) => {
+  try {
+      // obtener el nombre del archivo
+      const archivo = req.params.archivo;
+      // verificar si el archivo existe
+      const existe = fs.existsSync(__dirname + `/../uploads/${archivo}`);
+      // si el archivo existe, eliminarlo
+      if (existe) {
+          fs.unlinkSync(__dirname + `/../uploads/${archivo}`);
+          return next();
+      }
+  } catch (error) {
+      console.error(error)
+  }
 };
+
 
 // descarga un archivo
 exports.descargar = async (req, res, next) => {
@@ -51,13 +60,11 @@ exports.descargar = async (req, res, next) => {
 
   // verificar si el enlace existe
   if(!enlace) {
-    // enviar respuesta con código 404 y mensaje de error
-    res.status(404).json({msg: 'El archivo que intentas descargar ya no está disponible'});
-    return next();
+    // enviar respuesta con código 404 y mensaje de error    
+    return res.status(404).json({msg: 'El archivo que intentas descargar ya no está disponible'});
   }
 
   // si el enlace existe, continuar con la lógica de descarga y eliminación
-
   const archivoDescarga = __dirname + '/../uploads/' + archivo;
   res.download(archivoDescarga);
 
