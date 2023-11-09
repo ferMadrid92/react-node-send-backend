@@ -49,6 +49,15 @@ exports.descargar = async (req, res, next) => {
   const { archivo } =  req.params;
   const enlace = await Enlaces.findOne({ nombre: archivo});
 
+  // verificar si el enlace existe
+  if(!enlace) {
+    // enviar respuesta con código 404 y mensaje de error
+    res.status(404).json({msg: 'El archivo que intentas descargar ya no está disponible'});
+    return next();
+  }
+
+  // si el enlace existe, continuar con la lógica de descarga y eliminación
+
   const archivoDescarga = __dirname + '/../uploads/' + archivo;
   res.download(archivoDescarga);
 
