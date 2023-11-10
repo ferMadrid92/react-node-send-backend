@@ -66,7 +66,12 @@ exports.descargar = async (req, res, next) => {
 
   // si el enlace existe, continuar con la lógica de descarga y eliminación
   const archivoDescarga = __dirname + '/../uploads/' + archivo;
-  res.download(archivoDescarga);
+  try {
+    res.download(archivoDescarga);
+  } catch (error) {
+      // enviar respuesta con código 500 y mensaje de error
+      return res.status(500).json({msg: 'Ha ocurrido un error al descargar el archivo'});
+  } 
 
   // eliminar el archivo y la entrada de la bdd
   // si las descargas son iguales a 1 : borrar la entrada y borrar el archivo
